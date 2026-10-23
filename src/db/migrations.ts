@@ -5,12 +5,50 @@ import type { SQLiteDatabase } from "expo-sqlite";
 // применённой ступени, миграции применяются последовательно от текущего значения.
 const migrations: string[] = [
   `
-  -- Миграция 1 — пример. Замени "items" на реальные сущности приложения
-  -- и удали этот комментарий вместе с примером ниже.
+  -- Вещь гардероба; weather — список через запятую (пусто = любая погода).
   CREATE TABLE IF NOT EXISTS items (
     id TEXT PRIMARY KEY NOT NULL,
-    title TEXT NOT NULL,
-    created_at TEXT NOT NULL
+    name TEXT NOT NULL,
+    kind TEXT NOT NULL,
+    grams INTEGER NOT NULL,
+    per_day REAL NOT NULL,
+    wears INTEGER NOT NULL,
+    weather TEXT NOT NULL,
+    activity TEXT,
+    essential INTEGER NOT NULL,
+    wearable INTEGER NOT NULL,
+    created_at INTEGER NOT NULL
+  );
+  -- Поездка; days — JSON массива дней (погода, занятия, стирка).
+  CREATE TABLE IF NOT EXISTS trips (
+    id TEXT PRIMARY KEY NOT NULL,
+    name TEXT NOT NULL,
+    start TEXT NOT NULL,
+    days TEXT NOT NULL,
+    limit_g INTEGER NOT NULL,
+    bag_g INTEGER NOT NULL,
+    skip TEXT NOT NULL DEFAULT '',
+    closed INTEGER NOT NULL DEFAULT 0,
+    created_at INTEGER NOT NULL
+  );
+  -- Отметки "уже в сумке" по поездке.
+  CREATE TABLE IF NOT EXISTS packed (
+    trip_id TEXT NOT NULL,
+    item_id TEXT NOT NULL,
+    PRIMARY KEY (trip_id, item_id)
+  );
+  -- Разбор после поездки — наблюдения модели.
+  CREATE TABLE IF NOT EXISTS usages (
+    trip_id TEXT NOT NULL,
+    item_id TEXT NOT NULL,
+    packed INTEGER NOT NULL,
+    used INTEGER NOT NULL,
+    planned INTEGER NOT NULL,
+    PRIMARY KEY (trip_id, item_id)
+  );
+  CREATE TABLE IF NOT EXISTS meta (
+    key TEXT PRIMARY KEY NOT NULL,
+    value TEXT NOT NULL
   );
   `,
 ];
