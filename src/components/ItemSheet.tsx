@@ -6,12 +6,13 @@ import { Chip, Stepper } from "./Bits";
 import { Toggle } from "./Toggle";
 import { PrimaryButton } from "./PrimaryButton";
 import { STARTER, type Preset } from "../lib/wardrobe";
-import { ACTIVITIES, WEATHER, type Item } from "../lib/types";
+import { ACTIVITIES, SLOTS, WEATHER, type Item } from "../lib/types";
+import { SLOT_LABEL } from "../ui/icons";
 
 // Вещь гардероба. Пресеты заполняют всё одним тапом.
 export function ItemSheet({ visible, onClose, onSave, initial }: { visible: boolean; onClose: () => void; onSave: (p: Preset) => void; initial?: Item | null }) {
   const t = useTheme();
-  const blank: Preset = { name: "", kind: "wear", grams: 200, perDay: 1, wears: 1, weather: [], activity: null, essential: false, wearable: false };
+  const blank: Preset = { name: "", kind: "wear", grams: 200, perDay: 1, wears: 1, weather: [], activity: null, essential: false, slot: null };
   const [d, setD] = useState<Preset>(blank);
   useEffect(() => {
     if (visible) setD(initial ? { ...initial } : blank);
@@ -64,7 +65,14 @@ export function ItemSheet({ visible, onClose, onSave, initial }: { visible: bool
         </View>
       </Field>
       {row("Must come", <Toggle value={d.essential} onValueChange={(essential) => setD({ ...d, essential })} />, "Never cut to fit the bag")}
-      {row("Can wear on the way", <Toggle value={d.wearable} onValueChange={(wearable) => setD({ ...d, wearable })} />, "Heaviest of these go on you, not in the bag")}
+      <Field label="Wear it on the way?" hint="The heaviest needed item in each slot goes on you, not in the bag.">
+        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+          <Chip label="No" active={d.slot === null} onPress={() => setD({ ...d, slot: null })} />
+          {SLOTS.map((s) => (
+            <Chip key={s} label={SLOT_LABEL[s]} active={d.slot === s} onPress={() => setD({ ...d, slot: s })} />
+          ))}
+        </View>
+      </Field>
     </Sheet>
   );
 }

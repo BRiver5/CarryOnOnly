@@ -104,8 +104,8 @@ export default function WhatIf() {
                     ×{b?.count ?? 0} → <Text style={{ color: t.colors.ink, fontWeight: "800" }}>×{a.count}</Text>
                   </Text>
                   <Text style={{ ...t.typography.caption, color: a.count < (b?.count ?? 0) ? t.colors.success : t.colors.signal, width: 64, textAlign: "right" }}>
-                    {a.grams - (b?.grams ?? 0) > 0 ? "+" : ""}
-                    {a.grams - (b?.grams ?? 0)} g
+                    {a.grams - (b?.grams ?? 0) > 0 ? "+" : "−"}
+                    {Math.abs(a.grams - (b?.grams ?? 0))} g
                   </Text>
                 </Animated.View>
               );
@@ -140,7 +140,7 @@ function Col({ title, grams, short, cuts, base }: { title: string; grams: number
     <View style={[styles.card, { flex: 1, backgroundColor: base !== undefined ? t.colors.surface : t.colors.surfaceAlt, borderColor: t.colors.border, gap: 3 }]}>
       <Text style={{ ...t.typography.overline, color: t.colors.inkMuted }}>{title}</Text>
       <Text style={{ fontSize: 24, fontWeight: "800", color: t.colors.ink }}>{kg(grams)}</Text>
-      {base !== undefined && Math.abs(d) >= 50 ? <Text style={{ ...t.typography.label, color: d < 0 ? t.colors.success : t.colors.signal }}>{d > 0 ? "+" : "−"}{kg(Math.abs(d))}</Text> : null}
+      {base !== undefined && Math.abs(d) >= 50 ? <Text style={{ ...t.typography.label, color: d < 0 ? t.colors.success : t.colors.signal }}>{d > 0 ? "+" : "−"}{Math.abs(d) < 1000 ? `${Math.round(Math.abs(d))} g` : kg(Math.abs(d))}</Text> : null}
       <Text style={{ ...t.typography.caption, color: t.colors.inkMuted, marginTop: 4 }}>{cuts ? `${cuts} ${cuts === 1 ? "item" : "items"} cut · ${short.toFixed(1)} short days` : "nothing cut"}</Text>
     </View>
   );

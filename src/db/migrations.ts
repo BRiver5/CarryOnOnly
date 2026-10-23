@@ -16,7 +16,7 @@ const migrations: string[] = [
     weather TEXT NOT NULL,
     activity TEXT,
     essential INTEGER NOT NULL,
-    wearable INTEGER NOT NULL,
+    slot TEXT,
     created_at INTEGER NOT NULL
   );
   -- Поездка; days — JSON массива дней (погода, занятия, стирка).

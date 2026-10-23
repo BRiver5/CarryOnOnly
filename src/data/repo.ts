@@ -10,7 +10,7 @@ function lock<R>(fn: () => Promise<R>): Promise<R> {
   return run;
 }
 
-type ItemRow = { id: string; name: string; kind: Item["kind"]; grams: number; per_day: number; wears: number; weather: string; activity: string | null; essential: number; wearable: number; created_at: number };
+type ItemRow = { id: string; name: string; kind: Item["kind"]; grams: number; per_day: number; wears: number; weather: string; activity: string | null; essential: number; slot: string | null; created_at: number };
 const toItem = (r: ItemRow): Item => ({
   id: r.id,
   name: r.name,
@@ -21,7 +21,7 @@ const toItem = (r: ItemRow): Item => ({
   weather: (r.weather ? r.weather.split(",") : []) as Weather[],
   activity: (r.activity as Activity | null) ?? null,
   essential: r.essential === 1,
-  wearable: r.wearable === 1,
+  slot: (r.slot as Item["slot"]) ?? null,
   createdAt: r.created_at,
 });
 
@@ -36,7 +36,7 @@ export const saveItems = (its: Item[]) =>
     const db = await getDb();
     await db.withTransactionAsync(async () => {
       for (const i of its)
-        await db.runAsync("INSERT OR REPLACE INTO items (id, name, kind, grams, per_day, wears, weather, activity, essential, wearable, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", [
+        await db.runAsync("INSERT OR REPLACE INTO items (id, name, kind, grams, per_day, wears, weather, activity, essential, slot, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);", [
           i.id,
           i.name,
           i.kind,
@@ -46,7 +46,7 @@ export const saveItems = (its: Item[]) =>
           i.weather.join(","),
           i.activity,
           i.essential ? 1 : 0,
-          i.wearable ? 1 : 0,
+          i.slot,
           i.createdAt,
         ]);
     });

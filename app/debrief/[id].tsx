@@ -23,12 +23,16 @@ export default function Debrief() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
   const app = useApp();
-  const trip = app.trips.find((x) => x.id === id);
-  const p = trip ? app.packings[trip.id] : undefined;
-  const lines = p ? p.lines.filter((l) => l.count > 0 && l.item.wears > 0) : [];
+  // Снимок на входе: после сохранения поездка закрывается, её укладка уходит
+  // из стора — без снимка экран "Learned" не успевал бы показаться.
+  const [trip] = useState(() => app.trips.find((x) => x.id === id));
+  const [lines] = useState(() => {
+    const p = trip ? app.packings[trip.id] : undefined;
+    return p ? p.lines.filter((l) => l.count > 0 && l.item.wears > 0) : [];
+  });
   const [used, setUsed] = useState<Record<string, number>>(() => Object.fromEntries(lines.map((l) => [l.item.id, l.count])));
   const [done, setDone] = useState(false);
-  if (!trip || !p) return null;
+  if (!trip) return null;
 
   const preview = learnTrip(
     JSON.parse(JSON.stringify(app.model ?? emptyModel())),

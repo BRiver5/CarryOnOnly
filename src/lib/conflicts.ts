@@ -26,7 +26,7 @@ function verify(trip: Trip, items: Item[], model: Model, base: Packing, cands: C
     const gain = b - shortTotal(after) - (c.kind === "limit" ? 2 : 0) - (c.kind === "dropActivity" ? 1 : 0);
     const fewer = base.trimmed.length - after.trimmed.length;
     if (b - shortTotal(after) > 0.05)
-      out.push({ change: c, label: describeChange(c, name), gain, effect: `${fewer > 0 ? `${fewer} fewer cuts · ` : ""}short days ${b.toFixed(1)} → ${shortTotal(after).toFixed(1)} · bag ${kg(after.total)}` });
+      out.push({ change: c, label: describeChange(c, name), gain, effect: `${fewer > 0 ? `${fewer} fewer ${fewer === 1 ? "cut" : "cuts"} · ` : ""}short days ${b.toFixed(1)} → ${shortTotal(after).toFixed(1)} · bag ${kg(after.total)}` });
   }
   return out.sort((a, b2) => b2.gain - a.gain).slice(0, 3);
 }

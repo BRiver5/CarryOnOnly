@@ -14,4 +14,6 @@ export function ActivityIcon({ a, size = 14, color }: { a: Activity; size?: numb
 }
 export { Shirt };
 
+export const SLOT_LABEL = { feet: "Shoes", outer: "Jacket / coat", body: "Clothes" } as const;
+
 export const kg = (g: number) => `${(g / 1000).toFixed(1)} kg`;

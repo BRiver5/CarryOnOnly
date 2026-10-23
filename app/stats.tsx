@@ -11,7 +11,6 @@ import { IconButton, Legend, SectionTitle } from "../src/components/Bits";
 import { AnimatedRing } from "../src/components/AnimatedRing";
 import { AnimatedCounter } from "../src/components/AnimatedCounter";
 import { DonutChart } from "../src/components/DonutChart";
-import { BarChart } from "../src/components/BarChart";
 import { EmptyState } from "../src/components/EmptyState";
 import { goBack } from "../src/ui/nav";
 import { kg } from "../src/ui/icons";
@@ -110,9 +109,24 @@ export default function Stats() {
       <SectionTitle title="Learned: days per wash vs what you set" />
       {learned.length ? (
         <>
-          <View style={{ height: 10 }} />
-          <BarChart data={learned.slice(0, 7).map((x) => ({ label: x.i.name.slice(0, 6), value: Math.round(x.f.factor * 100) }))} color={t.colors.accent} height={100} />
-          <Text style={{ ...t.typography.caption, color: t.colors.inkMuted, marginTop: 8 }}>100 = as set. 150 = you wear it 1.5× longer, so the plan packs fewer.</Text>
+          <View style={{ gap: 8, marginTop: 10 }}>
+            {learned.slice(0, 7).map((x) => {
+              const maxF = Math.max(1.5, ...learned.map((y) => y.f.factor));
+              return (
+                <View key={x.i.id} style={{ flexDirection: "row", alignItems: "center", gap: 10 }}>
+                  <Text numberOfLines={1} style={{ ...t.typography.label, color: t.colors.ink, width: 96 }}>
+                    {x.i.name}
+                  </Text>
+                  <View style={{ flex: 1, height: 10, borderRadius: 5, backgroundColor: t.colors.backgroundAlt }}>
+                    <View style={{ position: "absolute", left: `${(1 / maxF) * 100}%`, top: -3, bottom: -3, width: 2, backgroundColor: t.colors.ink }} />
+                    <View style={{ width: `${(Math.min(x.f.factor, maxF) / maxF) * 100}%`, height: 10, borderRadius: 5, backgroundColor: x.f.factor >= 1 ? t.colors.accent : t.colors.signal, opacity: 0.85 }} />
+                  </View>
+                  <Text style={{ ...t.typography.label, color: t.colors.ink, width: 44, textAlign: "right" }}>×{x.f.factor.toFixed(2)}</Text>
+                </View>
+              );
+            })}
+          </View>
+          <Text style={{ ...t.typography.caption, color: t.colors.inkMuted, marginTop: 8 }}>Black tick = as you set it. Past the tick, you wear it longer than set, so the plan packs fewer.</Text>
         </>
       ) : (
         <Text style={{ ...t.typography.caption, color: t.colors.inkMuted, marginTop: 6 }}>Nothing learned yet.</Text>
@@ -140,7 +154,7 @@ export default function Stats() {
           <Text style={{ ...t.typography.caption, color: t.colors.inkMuted, width: 52, textAlign: "right" }}>{kg(i.grams)}</Text>
         </View>
       ))}
-      <Text style={{ ...t.typography.caption, color: t.colors.inkFaint }}>Mark heavy items "can wear on the way" — up to three go on you.</Text>
+      <Text style={{ ...t.typography.caption, color: t.colors.inkFaint }}>Set "wear it on the way" on heavy shoes and coats — one per slot goes on you.</Text>
     </View>,
 
     np && nextTrip ? (

@@ -31,7 +31,7 @@ export function buildDays(nights: number, weather: Weather, acts: Activity[], ev
 export function TripSheet({ visible, onClose, onSave, today, initial }: { visible: boolean; onClose: () => void; onSave: (d: TripDraft) => void; today: string; initial?: Trip | null }) {
   const t = useTheme();
   const [name, setName] = useState("");
-  const [start, setStart] = useState(addDays(today, 7));
+  const [start, setStart] = useState(addDays(today, 1));
   const [nights, setNights] = useState(6);
   const [weather, setWeather] = useState<Weather>("mild");
   const [acts, setActs] = useState<Activity[]>([]);
@@ -41,7 +41,7 @@ export function TripSheet({ visible, onClose, onSave, today, initial }: { visibl
   useEffect(() => {
     if (!visible) return;
     setName(initial?.name ?? "");
-    setStart(initial?.start ?? addDays(today, 7));
+    setStart(initial?.start ?? addDays(today, 1));
     setNights(initial ? initial.days.length - 1 : 6);
     setWeather(initial?.days[0]?.weather ?? "mild");
     setActs(initial ? [...new Set(initial.days.flatMap((d) => d.activities))].filter((a) => a !== "city") : []);

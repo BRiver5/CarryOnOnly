@@ -6,6 +6,8 @@ export const ACTIVITIES = ["city", "hike", "beach", "formal", "sport"] as const;
 export type Activity = (typeof ACTIVITIES)[number];
 
 export type ItemKind = "wear" | "gear" | "toiletry";
+export const SLOTS = ["feet", "outer", "body"] as const;
+export type WornSlot = (typeof SLOTS)[number];
 
 export type Item = {
   id: string;
@@ -17,7 +19,7 @@ export type Item = {
   weather: Weather[]; // пусто — в любую погоду
   activity: Activity | null; // null — каждый день
   essential: boolean; // нельзя убрать из сумки совсем
-  wearable: boolean; // можно надеть в дорогу (не кладётся в вес сумки)
+  slot: WornSlot | null; // что можно надеть в дорогу (не кладётся в сумку): по одной вещи на слот
   createdAt: number;
 };
 

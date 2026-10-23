@@ -8,7 +8,7 @@
 import { need, shortDays, type Need } from "./need.ts";
 import type { Model } from "./model.ts";
 import { factorFor } from "./model.ts";
-import type { Item, Trip } from "./types.ts";
+import { SLOTS, type Item, type Trip } from "./types.ts";
 
 export const STEP = 25;
 const ESSENTIAL_PENALTY = 1000;
@@ -35,8 +35,11 @@ export type Packing = {
   wornGrams: number;
 };
 
+// Цена дня-нехватки. Одежду можно постирать в раковине, а вещь, которая не
+// стирается (ноутбук, ботинки), без замены на всю поездку — она дороже.
 export function importance(item: Item): number {
-  return item.essential ? 3 : item.kind === "wear" ? 1 : 0.6;
+  if (item.essential) return 3;
+  return item.wears === 0 ? 1.5 : 1;
 }
 
 export function pack(trip: Trip, items: Item[], model: Model): Packing {
@@ -46,14 +49,13 @@ export function pack(trip: Trip, items: Item[], model: Model): Packing {
     const n = need(item, trip, f);
     return { item, n, f };
   });
-  // 2. Надеть в дорогу: по одной штуке самых тяжёлых wearable из тех, что нужны.
-  const wornIds = new Set(
-    base
-      .filter((b) => b.item.wearable && b.n.count > 0)
-      .sort((a, b) => b.item.grams - a.item.grams)
-      .slice(0, 3)
-      .map((b) => b.item.id),
-  );
+  // 2. Надеть в дорогу: в каждом слоте (обувь, верхний слой, одежда) — одну
+  // самую тяжёлую из нужных вещей. Две пары обуви сразу не надеть.
+  const wornIds = new Set<string>();
+  for (const slot of SLOTS) {
+    const top = base.filter((b) => b.item.slot === slot && b.n.count > 0).sort((a, b) => b.item.grams - a.item.grams)[0];
+    if (top) wornIds.add(top.item.id);
+  }
   const wornGrams = base.filter((b) => wornIds.has(b.item.id)).reduce((s, b) => s + b.item.grams, 0);
   const capacity = Math.max(0, trip.limit - trip.bag);
   const idealBag = base.reduce((s, b) => s + Math.max(0, b.n.count - (wornIds.has(b.item.id) ? 1 : 0)) * b.item.grams, 0);

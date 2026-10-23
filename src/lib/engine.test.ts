@@ -53,11 +53,14 @@ test("packing fits the limit with an exact trade-off and keeps essentials", () =
   assert.equal(shortTotal(big), 0);
   assert.ok(shortTotal(p) > 0);
   assert.ok(p.lines.some((l) => l.worn));
+  // На себе — не больше одной вещи на слот (две пары обуви сразу не надеть).
+  const worn = p.lines.filter((l) => l.worn);
+  assert.equal(new Set(worn.map((l) => l.item.slot)).size, worn.length);
 });
 
 test("DP matches brute force over every count combination", () => {
   // Полный перебор на маленьком наборе: 3 вещи, лимит строгий.
-  const few = [byName("Socks"), byName("T-shirt"), byName("Jeans")].map((i) => ({ ...i, essential: false, wearable: false }));
+  const few = [byName("Socks"), byName("T-shirt"), byName("Jeans")].map((i) => ({ ...i, essential: false, slot: null }));
   const t = trip(Array.from({ length: 6 }, () => day({ weather: "mild" })), { limit: 1800 + 900, bag: 1800 });
   const p = pack(t, few, emptyModel());
   let best = Infinity;

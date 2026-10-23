@@ -226,7 +226,7 @@ function WhyBody({ l, cyclesCount, longest }: { l: Line; cyclesCount: number; lo
     rows.push(["Days per wash", `${l.item.wears} set × ${f.factor.toFixed(2)} learned = ${l.need.effWears.toFixed(1)}`]);
     rows.push(["So you'd want", `⌈${l.need.worstCycle} ÷ ${l.need.effWears.toFixed(1)}⌉ = ${l.ideal}`]);
   } else rows.push(["Not washed", "one is enough for the whole trip"]);
-  if (l.worn) rows.push(["On the way", "one is worn, not packed — it's among the heaviest you can wear"]);
+  if (l.worn) rows.push(["On the way", "one is worn, not packed — the heaviest needed item in its slot"]);
   if (l.count < l.ideal) rows.push(["Cut to fit", `${l.ideal} → ${l.count}: costs ${l.short.toFixed(1)} short days × importance ${importance(l.item)} — the cheapest cut that fits the limit`]);
   return (
     <View style={{ gap: 10 }}>

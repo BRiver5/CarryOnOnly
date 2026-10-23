@@ -6,10 +6,12 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { ChevronLeft } from "lucide-react-native";
 import { useTheme } from "../../src/theme";
 import { useApp } from "../../src/store/appStore";
-import { IconButton, SectionTitle, Stepper } from "../../src/components/Bits";
+import { Chip, IconButton, SectionTitle, Stepper } from "../../src/components/Bits";
 import { Toggle } from "../../src/components/Toggle";
 import { goBack } from "../../src/ui/nav";
 import { factorFor } from "../../src/lib/model";
+import { SLOTS } from "../../src/lib/types";
+import { SLOT_LABEL } from "../../src/ui/icons";
 import { dayLabel } from "../../src/lib/time";
 
 export default function ItemDetail() {
@@ -50,7 +52,15 @@ export default function ItemDetail() {
           <Row label="Weight" right={<Stepper value={it.grams} min={10} max={3000} step={it.grams >= 500 ? 50 : 10} onChange={(grams) => save({ grams })} format={(v) => `${v} g`} />} />
           {it.wears > 0 ? <Row label="Days per wash" right={<Stepper value={it.wears} min={1} max={10} onChange={(wears) => save({ wears })} />} /> : null}
           <Row label="Must come" right={<Toggle value={it.essential} onValueChange={(essential) => save({ essential })} />} />
-          <Row label="Can wear on the way" right={<Toggle value={it.wearable} onValueChange={(wearable) => save({ wearable })} />} />
+          <View style={{ gap: 6 }}>
+            <Text style={{ ...t.typography.body, color: t.colors.ink }}>Wear it on the way</Text>
+            <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
+              <Chip label="No" active={it.slot === null} onPress={() => save({ slot: null })} />
+              {SLOTS.map((s) => (
+                <Chip key={s} label={SLOT_LABEL[s]} active={it.slot === s} onPress={() => save({ slot: s })} />
+              ))}
+            </View>
+          </View>
         </Animated.View>
         {/* 1 */}
         <Sticky title="What the app learned" />
